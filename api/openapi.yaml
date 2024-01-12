@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: Sample Go ogen APP
+  description: |-
+    This is the Sample Go ogen APP API documentation.
+  termsOfService: https://localhost:8080
+  contact:
+    email: kotaro.otaka@example.com
+  license:
+    name: Apache 2.0
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Health
+    description: Health
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health
+      description: Health
+      operationId: getHealth
+      parameters:
+        - name: message
+          in: query
+          description: message
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseSchema'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseSchema'
+    post:
+      tags:
+        - Health
+      summary: Health
+      description: Health
+      operationId: postHealth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthRequestSchema'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseSchema'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseSchema'
+components:
+  schemas:
+    HealthRequestSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    HealthResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    ErrorResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
