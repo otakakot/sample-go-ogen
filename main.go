@@ -11,11 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/otakakot/sample-go-ogen/internal/handler"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
 )
 
 func main() {
-	hdl, err := api.NewServer(&Handler{})
+	hdl, err := api.NewServer(&handler.Handler{})
 	if err != nil {
 		panic(err)
 	}
@@ -56,22 +57,4 @@ func main() {
 	}
 
 	slog.Info("done server shutdown")
-}
-
-var _ api.Handler = (*Handler)(nil)
-
-type Handler struct{}
-
-// PostHealth implements api.Handler.
-func (*Handler) PostHealth(ctx context.Context, req *api.HealthRequestSchema) (api.PostHealthRes, error) {
-	return &api.HealthResponseSchema{
-		Message: req.Message,
-	}, nil
-}
-
-// GetHealth implements api.Handler.
-func (*Handler) GetHealth(ctx context.Context, params api.GetHealthParams) (api.GetHealthRes, error) {
-	return &api.HealthResponseSchema{
-		Message: params.Message,
-	}, nil
 }

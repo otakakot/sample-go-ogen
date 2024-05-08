@@ -2,21 +2,24 @@ package e2e_test
 
 import (
 	"context"
-	"os"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/otakakot/sample-go-ogen/internal/handler"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
 )
 
 func TestE2e(t *testing.T) {
 	t.Parallel()
 
-	endpoint := os.Getenv("ENDPOINT")
-	if endpoint == "" {
-		endpoint = "http://localhost:8080"
+	hdl, err := api.NewServer(&handler.Handler{})
+	if err != nil {
+		t.Fatalf("failed to create server: %v", err)
 	}
 
-	cli, err := api.NewClient(endpoint)
+	srv := httptest.NewServer(hdl)
+
+	cli, err := api.NewClient(srv.URL)
 	if err != nil {
 		t.Fatal(err)
 	}
