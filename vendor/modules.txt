@@ -2,7 +2,7 @@
 ## explicit; go 1.13
 github.com/dlclark/regexp2
 github.com/dlclark/regexp2/syntax
-# github.com/fatih/color v1.16.0
+# github.com/fatih/color v1.17.0
 ## explicit; go 1.17
 github.com/fatih/color
 # github.com/ghodss/yaml v1.0.0
@@ -34,7 +34,7 @@ github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/ogen-go/ogen v1.1.0
+# github.com/ogen-go/ogen v1.1.1
 ## explicit; go 1.21.0
 github.com/ogen-go/ogen/conv
 github.com/ogen-go/ogen/http
