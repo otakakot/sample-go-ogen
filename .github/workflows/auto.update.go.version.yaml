@@ -6,7 +6,7 @@ on:
       - opened
 jobs:
   auto-merge:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: ${{ github.head_ref == 'renovate/go-1.x' || github.head_ref == 'renovate/golang-1.x' }}
     steps:
       - name: Check branch
