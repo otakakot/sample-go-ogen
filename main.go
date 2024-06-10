@@ -12,11 +12,16 @@ import (
 	"time"
 
 	"github.com/otakakot/sample-go-ogen/internal/handler"
+	"github.com/otakakot/sample-go-ogen/internal/security"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
 )
 
 func main() {
-	hdl, err := api.NewServer(&handler.Handler{})
+
+	hdl, err := api.NewServer(
+		&handler.Handler{},
+		&security.Security{},
+	)
 	if err != nil {
 		panic(err)
 	}

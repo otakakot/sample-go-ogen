@@ -2,6 +2,20 @@
 
 package api
 
+type BearerAuth struct {
+	Token string
+}
+
+// GetToken returns the value of Token.
+func (s *BearerAuth) GetToken() string {
+	return s.Token
+}
+
+// SetToken sets the value of Token.
+func (s *BearerAuth) SetToken(val string) {
+	s.Token = val
+}
+
 // Ref: #/components/schemas/ErrorResponseSchema
 type ErrorResponseSchema struct {
 	Message string `json:"message"`
@@ -54,3 +68,53 @@ func (s *HealthResponseSchema) SetMessage(val string) {
 
 func (*HealthResponseSchema) getHealthRes()  {}
 func (*HealthResponseSchema) postHealthRes() {}
+
+// TestBadRequest is response for Test operation.
+type TestBadRequest struct{}
+
+func (*TestBadRequest) testRes() {}
+
+// TestCreated is response for Test operation.
+type TestCreated struct{}
+
+func (*TestCreated) testRes() {}
+
+// TestForbidden is response for Test operation.
+type TestForbidden struct{}
+
+func (*TestForbidden) testRes() {}
+
+// TestInternalServerError is response for Test operation.
+type TestInternalServerError struct{}
+
+func (*TestInternalServerError) testRes() {}
+
+// TestNotFound is response for Test operation.
+type TestNotFound struct{}
+
+func (*TestNotFound) testRes() {}
+
+// TestOK is response for Test operation.
+type TestOK struct{}
+
+func (*TestOK) testRes() {}
+
+type TestReq struct {
+	// Status.
+	Status int `json:"status"`
+}
+
+// GetStatus returns the value of Status.
+func (s *TestReq) GetStatus() int {
+	return s.Status
+}
+
+// SetStatus sets the value of Status.
+func (s *TestReq) SetStatus(val int) {
+	s.Status = val
+}
+
+// TestUnauthorized is response for Test operation.
+type TestUnauthorized struct{}
+
+func (*TestUnauthorized) testRes() {}

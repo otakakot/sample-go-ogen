@@ -17,6 +17,8 @@ servers:
 tags:
   - name: Health
     description: Health
+  - name: Test
+    description: Test
 paths:
   /health:
     get:
@@ -33,18 +35,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponseSchema'
-        '500':
+                $ref: "#/components/schemas/HealthResponseSchema"
+        "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponseSchema'
+                $ref: "#/components/schemas/ErrorResponseSchema"
     post:
       tags:
         - Health
@@ -56,21 +58,62 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HealthRequestSchema'
+              $ref: "#/components/schemas/HealthRequestSchema"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponseSchema'
-        '500':
+                $ref: "#/components/schemas/HealthResponseSchema"
+        "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponseSchema'
+                $ref: "#/components/schemas/ErrorResponseSchema"
+  /test:
+    post:
+      tags:
+        - Test
+      summary: Test
+      description: Test
+      operationId: test
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: status
+                  example: 200
+              required:
+                - status
+      responses:
+        "200":
+          description: OK
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     HealthRequestSchema:
       type: object

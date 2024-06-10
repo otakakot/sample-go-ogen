@@ -8,13 +8,14 @@ import (
 	"testing"
 
 	"github.com/otakakot/sample-go-ogen/internal/handler"
+	"github.com/otakakot/sample-go-ogen/internal/security"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
 )
 
 func TestHttpTest(t *testing.T) {
 	t.Parallel()
 
-	hdl, err := api.NewServer(&handler.Handler{})
+	hdl, err := api.NewServer(&handler.Handler{}, &security.Security{})
 	if err != nil {
 		t.Fatalf("failed to create server: %v", err)
 	}

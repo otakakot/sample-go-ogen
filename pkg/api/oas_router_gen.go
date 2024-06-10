@@ -48,26 +48,65 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/health"
-			if l := len("/health"); len(elem) >= l && elem[0:l] == "/health" {
+		case '/': // Prefix: "/"
+			origElem := elem
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				// Leaf node.
-				switch r.Method {
-				case "GET":
-					s.handleGetHealthRequest([0]string{}, elemIsEscaped, w, r)
-				case "POST":
-					s.handlePostHealthRequest([0]string{}, elemIsEscaped, w, r)
-				default:
-					s.notAllowed(w, r, "GET,POST")
+				break
+			}
+			switch elem[0] {
+			case 'h': // Prefix: "health"
+				origElem := elem
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
 				}
 
-				return
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleGetHealthRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handlePostHealthRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+
+				elem = origElem
+			case 't': // Prefix: "test"
+				origElem := elem
+				if l := len("test"); len(elem) >= l && elem[0:l] == "test" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "POST":
+						s.handleTestRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "POST")
+					}
+
+					return
+				}
+
+				elem = origElem
 			}
+
+			elem = origElem
 		}
 	}
 	s.notFound(w, r)
@@ -148,37 +187,79 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/health"
-			if l := len("/health"); len(elem) >= l && elem[0:l] == "/health" {
+		case '/': // Prefix: "/"
+			origElem := elem
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch method {
-				case "GET":
-					// Leaf: GetHealth
-					r.name = "GetHealth"
-					r.summary = "Health"
-					r.operationID = "getHealth"
-					r.pathPattern = "/health"
-					r.args = args
-					r.count = 0
-					return r, true
-				case "POST":
-					// Leaf: PostHealth
-					r.name = "PostHealth"
-					r.summary = "Health"
-					r.operationID = "postHealth"
-					r.pathPattern = "/health"
-					r.args = args
-					r.count = 0
-					return r, true
-				default:
-					return
-				}
+				break
 			}
+			switch elem[0] {
+			case 'h': // Prefix: "health"
+				origElem := elem
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "GET":
+						r.name = "GetHealth"
+						r.summary = "Health"
+						r.operationID = "getHealth"
+						r.pathPattern = "/health"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "PostHealth"
+						r.summary = "Health"
+						r.operationID = "postHealth"
+						r.pathPattern = "/health"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 't': // Prefix: "test"
+				origElem := elem
+				if l := len("test"); len(elem) >= l && elem[0:l] == "test" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "POST":
+						r.name = "Test"
+						r.summary = "Test"
+						r.operationID = "test"
+						r.pathPattern = "/test"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			}
+
+			elem = origElem
 		}
 	}
 	return r, false

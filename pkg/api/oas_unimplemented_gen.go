@@ -30,3 +30,12 @@ func (UnimplementedHandler) GetHealth(ctx context.Context, params GetHealthParam
 func (UnimplementedHandler) PostHealth(ctx context.Context, req *HealthRequestSchema) (r PostHealthRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// Test implements test operation.
+//
+// Test.
+//
+// POST /test
+func (UnimplementedHandler) Test(ctx context.Context, req *TestReq) (r TestRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

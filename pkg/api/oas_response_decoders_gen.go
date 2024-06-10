@@ -165,3 +165,30 @@ func decodePostHealthResponse(resp *http.Response) (res PostHealthRes, _ error) 
 	}
 	return res, validate.UnexpectedStatusCode(resp.StatusCode)
 }
+
+func decodeTestResponse(resp *http.Response) (res TestRes, _ error) {
+	switch resp.StatusCode {
+	case 200:
+		// Code 200.
+		return &TestOK{}, nil
+	case 201:
+		// Code 201.
+		return &TestCreated{}, nil
+	case 400:
+		// Code 400.
+		return &TestBadRequest{}, nil
+	case 401:
+		// Code 401.
+		return &TestUnauthorized{}, nil
+	case 403:
+		// Code 403.
+		return &TestForbidden{}, nil
+	case 404:
+		// Code 404.
+		return &TestNotFound{}, nil
+	case 500:
+		// Code 500.
+		return &TestInternalServerError{}, nil
+	}
+	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+}

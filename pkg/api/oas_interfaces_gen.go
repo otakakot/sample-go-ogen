@@ -8,3 +8,7 @@ type GetHealthRes interface {
 type PostHealthRes interface {
 	postHealthRes()
 }
+
+type TestRes interface {
+	testRes()
+}
