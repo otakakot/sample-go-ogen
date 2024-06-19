@@ -29,13 +29,13 @@ type Invoker interface {
 	// Health.
 	//
 	// GET /health
-	GetHealth(ctx context.Context, params GetHealthParams) (GetHealthRes, error)
+	GetHealth(ctx context.Context, params GetHealthParams) (*HealthResponseSchema, error)
 	// PostHealth invokes postHealth operation.
 	//
 	// Health.
 	//
 	// POST /health
-	PostHealth(ctx context.Context, request *HealthRequestSchema) (PostHealthRes, error)
+	PostHealth(ctx context.Context, request *HealthRequestSchema) (*HealthResponseSchema, error)
 	// Test invokes test operation.
 	//
 	// Test.
@@ -50,8 +50,12 @@ type Client struct {
 	sec       SecuritySource
 	baseClient
 }
+type errorHandler interface {
+	NewError(ctx context.Context, err error) *ErrorStatusCode
+}
 
 var _ Handler = struct {
+	errorHandler
 	*Client
 }{}
 
@@ -99,12 +103,12 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // Health.
 //
 // GET /health
-func (c *Client) GetHealth(ctx context.Context, params GetHealthParams) (GetHealthRes, error) {
+func (c *Client) GetHealth(ctx context.Context, params GetHealthParams) (*HealthResponseSchema, error) {
 	res, err := c.sendGetHealth(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetHealth(ctx context.Context, params GetHealthParams) (res GetHealthRes, err error) {
+func (c *Client) sendGetHealth(ctx context.Context, params GetHealthParams) (res *HealthResponseSchema, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getHealth"),
 		semconv.HTTPMethodKey.String("GET"),
@@ -189,12 +193,12 @@ func (c *Client) sendGetHealth(ctx context.Context, params GetHealthParams) (res
 // Health.
 //
 // POST /health
-func (c *Client) PostHealth(ctx context.Context, request *HealthRequestSchema) (PostHealthRes, error) {
+func (c *Client) PostHealth(ctx context.Context, request *HealthRequestSchema) (*HealthResponseSchema, error) {
 	res, err := c.sendPostHealth(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendPostHealth(ctx context.Context, request *HealthRequestSchema) (res PostHealthRes, err error) {
+func (c *Client) sendPostHealth(ctx context.Context, request *HealthRequestSchema) (res *HealthResponseSchema, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postHealth"),
 		semconv.HTTPMethodKey.String("POST"),

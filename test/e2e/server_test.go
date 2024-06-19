@@ -39,14 +39,9 @@ func TestServer(t *testing.T) {
 			Message: want,
 		}
 
-		res, err := cli.GetHealth(ctx, params)
+		got, err := cli.GetHealth(ctx, params)
 		if err != nil {
 			t.Fatal(err)
-		}
-
-		got, ok := res.(*api.HealthResponseSchema)
-		if !ok {
-			t.Fatalf("unexpected response: %T", res)
 		}
 
 		if got.Message != want {
@@ -63,14 +58,9 @@ func TestServer(t *testing.T) {
 			Message: want,
 		}
 
-		res, err := cli.PostHealth(ctx, req)
+		got, err := cli.PostHealth(ctx, req)
 		if err != nil {
 			t.Fatal(err)
-		}
-
-		got, ok := res.(*api.HealthResponseSchema)
-		if !ok {
-			t.Fatalf("unexpected response: %T", res)
 		}
 
 		if got.Message != want {

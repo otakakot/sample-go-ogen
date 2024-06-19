@@ -1,4 +1,4 @@
-package e2e
+package e2e_test
 
 import (
 	"bytes"
@@ -20,89 +20,256 @@ func TestHttpTest(t *testing.T) {
 		t.Fatalf("failed to create server: %v", err)
 	}
 
-	t.Run("GET /health", func(t *testing.T) {
+	t.Run("200", func(t *testing.T) {
 		t.Parallel()
-
-		want := "test"
-
-		req, err := http.NewRequest(http.MethodGet, "/health", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		query := req.URL.Query()
-		query.Add("message", want)
-		req.URL.RawQuery = query.Encode()
-
-		res := httptest.NewRecorder()
-
-		hdl.ServeHTTP(res, req)
-
-		if res.Code != http.StatusOK {
-			t.Fatalf("unexpected status code: got=%d, want=%d", res.Code, http.StatusOK)
-		}
-
-		defer func() {
-			if err := res.Result().Body.Close(); err != nil {
-				t.Error(err)
-			}
-		}()
-
-		var got *api.HealthResponseSchema
-
-		if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
-			t.Fatal(err)
-		}
-
-		if got.Message != want {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, want)
-		}
-	})
-
-	t.Run("POST /health", func(t *testing.T) {
-		t.Parallel()
-
-		want := "test"
-
-		v := api.HealthRequestSchema{
-			Message: want,
-		}
 
 		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 200,
+		}
 
 		if err := json.NewEncoder(body).Encode(v); err != nil {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/health", body)
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
 		if err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
-		req.Header.Set("Content-Type", "application/json") // Must set Content-Type
+		req.Header.Set("Content-Type", "application/json")
+
+		req.Header.Set("Authorization", "Bearer token")
 
 		res := httptest.NewRecorder()
 
 		hdl.ServeHTTP(res, req)
 
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
 		if res.Code != http.StatusOK {
-			t.Fatalf("unexpected status code: got=%d, want=%d", res.Code, http.StatusOK)
+			t.Errorf("expected status code %d, got %d", http.StatusOK, res.Code)
 		}
 
-		defer func() {
-			if err := res.Result().Body.Close(); err != nil {
-				t.Error(err)
-			}
-		}()
-
-		var got *api.HealthResponseSchema
+		var got api.OKResponseSchema
 
 		if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
 			t.Fatal(err)
 		}
 
-		if got.Message != want {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, want)
+		if got.Message != "OK" {
+			t.Errorf("expected message %s, got %s", "OK", got.Message)
+		}
+	})
+
+	t.Run("201", func(t *testing.T) {
+		t.Parallel()
+
+		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 201,
+		}
+
+		if err := json.NewEncoder(body).Encode(v); err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+
+		req.Header.Set("Authorization", "Bearer token")
+
+		res := httptest.NewRecorder()
+
+		hdl.ServeHTTP(res, req)
+
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
+		if res.Code != http.StatusCreated {
+			t.Errorf("expected status code %d, got %d", http.StatusCreated, res.Code)
+		}
+
+		var got api.CreatedResponseSchema
+
+		if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+			t.Fatal(err)
+		}
+
+		if got.Message != "Created" {
+			t.Errorf("expected message %s, got %s", "Created", got.Message)
+		}
+	})
+
+	t.Run("400", func(t *testing.T) {
+		t.Parallel()
+
+		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 400,
+		}
+
+		if err := json.NewEncoder(body).Encode(v); err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+
+		req.Header.Set("Authorization", "Bearer token")
+
+		res := httptest.NewRecorder()
+
+		hdl.ServeHTTP(res, req)
+
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
+		if res.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %d, got %d", http.StatusBadRequest, res.Code)
+		}
+
+		var got api.Error
+
+		if err := json.NewDecoder(res.Result().Body).Decode(&got); err != nil {
+			t.Fatal(err)
+		}
+
+		if got.GetMessage() != "bad request" {
+			t.Errorf("expected message %s, got %s", "bad request", got.GetMessage())
+		}
+
+		// MEMO:
+		// server では api.ErrorStatusCode で返すが body には api.Error が入る
+	})
+
+	t.Run("403", func(t *testing.T) {
+		t.Parallel()
+
+		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 200,
+		}
+
+		if err := json.NewEncoder(body).Encode(v); err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+
+		req.Header.Set("Authorization", "Bearer hoge")
+
+		res := httptest.NewRecorder()
+
+		hdl.ServeHTTP(res, req)
+
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
+		if res.Code != http.StatusForbidden {
+			t.Errorf("expected status code %d, got %d", http.StatusForbidden, res.Code)
+		}
+	})
+
+	t.Run("500", func(t *testing.T) {
+		t.Parallel()
+
+		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 200,
+		}
+
+		if err := json.NewEncoder(body).Encode(v); err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+
+		res := httptest.NewRecorder()
+
+		hdl.ServeHTTP(res, req)
+
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
+		if res.Code != http.StatusInternalServerError {
+			t.Errorf("expected status code %d, got %d", http.StatusInternalServerError, res.Code)
+		}
+	})
+
+	t.Run("400", func(t *testing.T) {
+		t.Parallel()
+
+		body := &bytes.Buffer{}
+
+		v := &api.TestReq{
+			Status: 200,
+		}
+
+		if err := json.NewEncoder(body).Encode(v); err != nil {
+			t.Fatal(err)
+		}
+
+		req, err := http.NewRequest(http.MethodPost, "/test", body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		// MEMO: Content-Type が設定されていない
+
+		req.Header.Set("Authorization", "Bearer token")
+
+		res := httptest.NewRecorder()
+
+		hdl.ServeHTTP(res, req)
+
+		t.Cleanup(func() {
+			if err := res.Result().Body.Close(); err != nil {
+				t.Log(err)
+			}
+		})
+
+		if res.Code != http.StatusBadRequest {
+			t.Errorf("expected status code %d, got %d", http.StatusBadRequest, res.Code)
 		}
 	})
 }

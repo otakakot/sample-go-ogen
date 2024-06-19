@@ -79,7 +79,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		return
 	}
 
-	var response GetHealthRes
+	var response *HealthResponseSchema
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -99,7 +99,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		type (
 			Request  = struct{}
 			Params   = GetHealthParams
-			Response = GetHealthRes
+			Response = *HealthResponseSchema
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -118,8 +118,19 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		response, err = s.h.GetHealth(ctx, params)
 	}
 	if err != nil {
-		defer recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			if err := encodeErrorResponse(errRes, w, span); err != nil {
+				defer recordError("Internal", err)
+			}
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
+			defer recordError("Internal", err)
+		}
 		return
 	}
 
@@ -196,7 +207,7 @@ func (s *Server) handlePostHealthRequest(args [0]string, argsEscaped bool, w htt
 		}
 	}()
 
-	var response PostHealthRes
+	var response *HealthResponseSchema
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -211,7 +222,7 @@ func (s *Server) handlePostHealthRequest(args [0]string, argsEscaped bool, w htt
 		type (
 			Request  = *HealthRequestSchema
 			Params   = struct{}
-			Response = PostHealthRes
+			Response = *HealthResponseSchema
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -230,8 +241,19 @@ func (s *Server) handlePostHealthRequest(args [0]string, argsEscaped bool, w htt
 		response, err = s.h.PostHealth(ctx, request)
 	}
 	if err != nil {
-		defer recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			if err := encodeErrorResponse(errRes, w, span); err != nil {
+				defer recordError("Internal", err)
+			}
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
+			defer recordError("Internal", err)
+		}
 		return
 	}
 
@@ -303,8 +325,9 @@ func (s *Server) handleTestRequest(args [0]string, argsEscaped bool, w http.Resp
 					Security:         "BearerAuth",
 					Err:              err,
 				}
-				defer recordError("Security:BearerAuth", err)
-				s.cfg.ErrorHandler(ctx, w, r, err)
+				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
+					defer recordError("Security:BearerAuth", err)
+				}
 				return
 			}
 			if ok {
@@ -331,8 +354,9 @@ func (s *Server) handleTestRequest(args [0]string, argsEscaped bool, w http.Resp
 				OperationContext: opErrContext,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
-			defer recordError("Security", err)
-			s.cfg.ErrorHandler(ctx, w, r, err)
+			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
+				defer recordError("Security", err)
+			}
 			return
 		}
 	}
@@ -386,8 +410,19 @@ func (s *Server) handleTestRequest(args [0]string, argsEscaped bool, w http.Resp
 		response, err = s.h.Test(ctx, request)
 	}
 	if err != nil {
-		defer recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			if err := encodeErrorResponse(errRes, w, span); err != nil {
+				defer recordError("Internal", err)
+			}
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
+			defer recordError("Internal", err)
+		}
 		return
 	}
 

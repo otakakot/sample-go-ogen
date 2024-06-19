@@ -13,19 +13,23 @@ type Handler interface {
 	// Health.
 	//
 	// GET /health
-	GetHealth(ctx context.Context, params GetHealthParams) (GetHealthRes, error)
+	GetHealth(ctx context.Context, params GetHealthParams) (*HealthResponseSchema, error)
 	// PostHealth implements postHealth operation.
 	//
 	// Health.
 	//
 	// POST /health
-	PostHealth(ctx context.Context, req *HealthRequestSchema) (PostHealthRes, error)
+	PostHealth(ctx context.Context, req *HealthRequestSchema) (*HealthResponseSchema, error)
 	// Test implements test operation.
 	//
 	// Test.
 	//
 	// POST /test
 	Test(ctx context.Context, req *TestReq) (TestRes, error)
+	// NewError creates *ErrorStatusCode from error returned by handler.
+	//
+	// Used for common default response.
+	NewError(ctx context.Context, err error) *ErrorStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

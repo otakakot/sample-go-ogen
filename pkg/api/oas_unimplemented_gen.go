@@ -18,7 +18,7 @@ var _ Handler = UnimplementedHandler{}
 // Health.
 //
 // GET /health
-func (UnimplementedHandler) GetHealth(ctx context.Context, params GetHealthParams) (r GetHealthRes, _ error) {
+func (UnimplementedHandler) GetHealth(ctx context.Context, params GetHealthParams) (r *HealthResponseSchema, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -27,7 +27,7 @@ func (UnimplementedHandler) GetHealth(ctx context.Context, params GetHealthParam
 // Health.
 //
 // POST /health
-func (UnimplementedHandler) PostHealth(ctx context.Context, req *HealthRequestSchema) (r PostHealthRes, _ error) {
+func (UnimplementedHandler) PostHealth(ctx context.Context, req *HealthRequestSchema) (r *HealthResponseSchema, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -38,4 +38,12 @@ func (UnimplementedHandler) PostHealth(ctx context.Context, req *HealthRequestSc
 // POST /test
 func (UnimplementedHandler) Test(ctx context.Context, req *TestReq) (r TestRes, _ error) {
 	return r, ht.ErrNotImplemented
+}
+
+// NewError creates *ErrorStatusCode from error returned by handler.
+//
+// Used for common default response.
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
+	r = new(ErrorStatusCode)
+	return r
 }

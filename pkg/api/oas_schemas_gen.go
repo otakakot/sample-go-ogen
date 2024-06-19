@@ -2,6 +2,14 @@
 
 package api
 
+import (
+	"fmt"
+)
+
+func (s *ErrorStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
+
 type BearerAuth struct {
 	Token string
 }
@@ -16,23 +24,64 @@ func (s *BearerAuth) SetToken(val string) {
 	s.Token = val
 }
 
-// Ref: #/components/schemas/ErrorResponseSchema
-type ErrorResponseSchema struct {
+// Ref: #/components/schemas/CreatedResponseSchema
+type CreatedResponseSchema struct {
+	// Message.
 	Message string `json:"message"`
 }
 
 // GetMessage returns the value of Message.
-func (s *ErrorResponseSchema) GetMessage() string {
+func (s *CreatedResponseSchema) GetMessage() string {
 	return s.Message
 }
 
 // SetMessage sets the value of Message.
-func (s *ErrorResponseSchema) SetMessage(val string) {
+func (s *CreatedResponseSchema) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*ErrorResponseSchema) getHealthRes()  {}
-func (*ErrorResponseSchema) postHealthRes() {}
+func (*CreatedResponseSchema) testRes() {}
+
+// Ref: #/components/schemas/Error
+type Error struct {
+	Message string `json:"message"`
+}
+
+// GetMessage returns the value of Message.
+func (s *Error) GetMessage() string {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *Error) SetMessage(val string) {
+	s.Message = val
+}
+
+// ErrorStatusCode wraps Error with StatusCode.
+type ErrorStatusCode struct {
+	StatusCode int
+	Response   Error
+}
+
+// GetStatusCode returns the value of StatusCode.
+func (s *ErrorStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *ErrorStatusCode) GetResponse() Error {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *ErrorStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *ErrorStatusCode) SetResponse(val Error) {
+	s.Response = val
+}
 
 // Ref: #/components/schemas/HealthRequestSchema
 type HealthRequestSchema struct {
@@ -66,38 +115,35 @@ func (s *HealthResponseSchema) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*HealthResponseSchema) getHealthRes()  {}
-func (*HealthResponseSchema) postHealthRes() {}
+// Ref: #/components/schemas/OKResponseSchema
+type OKResponseSchema struct {
+	// Message.
+	Message string `json:"message"`
+}
 
-// TestBadRequest is response for Test operation.
-type TestBadRequest struct{}
+// GetMessage returns the value of Message.
+func (s *OKResponseSchema) GetMessage() string {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *OKResponseSchema) SetMessage(val string) {
+	s.Message = val
+}
+
+func (*OKResponseSchema) testRes() {}
+
+type TestBadRequest Error
 
 func (*TestBadRequest) testRes() {}
 
-// TestCreated is response for Test operation.
-type TestCreated struct{}
-
-func (*TestCreated) testRes() {}
-
-// TestForbidden is response for Test operation.
-type TestForbidden struct{}
+type TestForbidden Error
 
 func (*TestForbidden) testRes() {}
 
-// TestInternalServerError is response for Test operation.
-type TestInternalServerError struct{}
-
-func (*TestInternalServerError) testRes() {}
-
-// TestNotFound is response for Test operation.
-type TestNotFound struct{}
+type TestNotFound Error
 
 func (*TestNotFound) testRes() {}
-
-// TestOK is response for Test operation.
-type TestOK struct{}
-
-func (*TestOK) testRes() {}
 
 type TestReq struct {
 	// Status.
@@ -114,7 +160,6 @@ func (s *TestReq) SetStatus(val int) {
 	s.Status = val
 }
 
-// TestUnauthorized is response for Test operation.
-type TestUnauthorized struct{}
+type TestUnauthorized Error
 
 func (*TestUnauthorized) testRes() {}

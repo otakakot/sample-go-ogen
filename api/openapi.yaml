@@ -41,12 +41,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponseSchema"
-        "500":
+        default:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponseSchema"
+                $ref: "#/components/schemas/Error"
     post:
       tags:
         - Health
@@ -66,12 +66,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponseSchema"
-        "500":
+        default:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponseSchema"
+                $ref: "#/components/schemas/Error"
   /test:
     post:
       tags:
@@ -97,18 +97,46 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKResponseSchema"
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatedResponseSchema"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           description: Not Found
-        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
           description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     bearerAuth:
@@ -133,7 +161,25 @@ components:
           example: message
       required:
         - message
-    ErrorResponseSchema:
+    OKResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    CreatedResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    Error:
       type: object
       properties:
         message:

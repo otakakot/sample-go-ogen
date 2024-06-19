@@ -2,8 +2,9 @@ package security
 
 import (
 	"context"
-	"errors"
+	"log/slog"
 
+	"github.com/otakakot/sample-go-ogen/internal/model"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
 )
 
@@ -17,8 +18,10 @@ func (s *Security) HandleBearerAuth(
 	operationName string,
 	t api.BearerAuth,
 ) (context.Context, error) {
-	if t.GetToken() == "" {
-		return nil, errors.New("missing token")
+	if t.GetToken() != "token" {
+		slog.WarnContext(ctx, "invalid token")
+
+		return nil, model.ErrForbidden
 	}
 
 	return ctx, nil
