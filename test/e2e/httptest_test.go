@@ -15,7 +15,10 @@ import (
 func TestHttpTest(t *testing.T) {
 	t.Parallel()
 
-	hdl, err := api.NewServer(&handler.Handler{}, &security.Security{})
+	hdl, err := api.NewServer(
+		&handler.Handler{},
+		&security.Security{},
+	)
 	if err != nil {
 		t.Fatalf("failed to create server: %v", err)
 	}

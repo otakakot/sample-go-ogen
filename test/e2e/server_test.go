@@ -8,6 +8,7 @@ import (
 	"github.com/otakakot/sample-go-ogen/internal/handler"
 	"github.com/otakakot/sample-go-ogen/internal/security"
 	"github.com/otakakot/sample-go-ogen/pkg/api"
+	"github.com/otakakot/sample-go-ogen/pkg/testx"
 )
 
 func TestServer(t *testing.T) {
@@ -23,48 +24,145 @@ func TestServer(t *testing.T) {
 
 	srv := httptest.NewServer(hdl)
 
-	cli, err := api.NewClient(srv.URL, nil)
-	if err != nil {
-		t.Fatal(err)
+	t.Cleanup(func() {
+		srv.Close()
+	})
+
+	sec := &testx.Security{
+		T: t,
 	}
 
-	ctx := context.Background()
+	nosec := &testx.NoSecurity{
+		T: t,
+	}
 
-	t.Run("GetHealth", func(t *testing.T) {
+	not := &testx.NoToken{
+		T: t,
+	}
+
+	t.Run("200", func(t *testing.T) {
 		t.Parallel()
 
-		want := "test"
-
-		params := api.GetHealthParams{
-			Message: want,
-		}
-
-		got, err := cli.GetHealth(ctx, params)
+		cli, err := api.NewClient(srv.URL, sec)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if got.Message != want {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, want)
+		ctx := context.Background()
+
+		res, err := cli.Test(ctx, &api.TestReq{
+			Status: 200,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got, ok := res.(*api.OKResponseSchema)
+		if !ok {
+			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.OKResponseSchema{})
+		}
+
+		if got.Message != "OK" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "OK")
 		}
 	})
 
-	t.Run("PostHealth", func(t *testing.T) {
+	t.Run("201", func(t *testing.T) {
 		t.Parallel()
 
-		want := "test"
-
-		req := &api.HealthRequestSchema{
-			Message: want,
-		}
-
-		got, err := cli.PostHealth(ctx, req)
+		cli, err := api.NewClient(srv.URL, sec)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if got.Message != want {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, want)
+		ctx := context.Background()
+
+		res, err := cli.Test(ctx, &api.TestReq{
+			Status: 201,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got, ok := res.(*api.CreatedResponseSchema)
+		if !ok {
+			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.CreatedResponseSchema{})
+		}
+
+		if got.Message != "Created" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "Created")
+		}
+	})
+
+	t.Run("400", func(t *testing.T) {
+		t.Parallel()
+
+		cli, err := api.NewClient(srv.URL, sec)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ctx := context.Background()
+
+		res, err := cli.Test(ctx, &api.TestReq{
+			Status: 400,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got, ok := res.(*api.TestBadRequest)
+		if !ok {
+			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.TestBadRequest{})
+		}
+
+		if got.Message != "bad request" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "bad request")
+		}
+	})
+
+	t.Run("403", func(t *testing.T) {
+		t.Parallel()
+
+		cli, err := api.NewClient(srv.URL, nosec)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ctx := context.Background()
+
+		res, err := cli.Test(ctx, &api.TestReq{
+			Status: 200,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got, ok := res.(*api.TestForbidden)
+		if !ok {
+			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.TestForbidden{})
+		}
+
+		if got.Message != "operation Test: security \"BearerAuth\": forbidden" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "forbidden")
+		}
+	})
+
+	t.Run("500", func(t *testing.T) {
+		t.Parallel()
+
+		cli, err := api.NewClient(srv.URL, not)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		ctx := context.Background()
+
+		_, err = cli.Test(ctx, &api.TestReq{
+			Status: 200,
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
 		}
 	})
 }
