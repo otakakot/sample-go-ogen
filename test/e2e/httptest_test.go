@@ -65,8 +65,8 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if got.Message != "OK" {
-			t.Errorf("expected message %s, got %s", "OK", got.Message)
+		if got.Message != "ok" {
+			t.Errorf("expected message %s, got %s", "ok", got.Message)
 		}
 	})
 
@@ -112,8 +112,8 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if got.Message != "Created" {
-			t.Errorf("expected message %s, got %s", "Created", got.Message)
+		if got.Message != "created" {
+			t.Errorf("expected message %s, got %s", "created", got.Message)
 		}
 	})
 

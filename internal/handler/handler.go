@@ -49,13 +49,13 @@ func (hdl *Handler) Test(ctx context.Context, req *api.TestReq) (api.TestRes, er
 
 	if req.GetStatus() == http.StatusOK {
 		return &api.OKResponseSchema{
-			Message: "OK",
+			Message: "ok",
 		}, nil
 	}
 
 	if req.GetStatus() == http.StatusCreated {
 		return &api.CreatedResponseSchema{
-			Message: "Created",
+			Message: "created",
 		}, nil
 	}
 

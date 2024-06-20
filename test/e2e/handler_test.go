@@ -37,7 +37,7 @@ func TestHandler(t *testing.T) {
 				},
 			},
 			want: &api.OKResponseSchema{
-				Message: "OK",
+				Message: "ok",
 			},
 			wantErr: false,
 			checkErr: func(t *testing.T, err error) {
@@ -53,7 +53,7 @@ func TestHandler(t *testing.T) {
 				},
 			},
 			want: &api.CreatedResponseSchema{
-				Message: "Created",
+				Message: "created",
 			},
 			wantErr: false,
 			checkErr: func(t *testing.T, err error) {

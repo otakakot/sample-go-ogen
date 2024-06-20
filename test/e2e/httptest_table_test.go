@@ -55,7 +55,7 @@ func TestHttpTableTest(t *testing.T) {
 			want: want{
 				status: http.StatusOK,
 				body: api.OKResponseSchema{
-					Message: "OK",
+					Message: "ok",
 				},
 			},
 		},

@@ -62,8 +62,8 @@ func TestServer(t *testing.T) {
 			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.OKResponseSchema{})
 		}
 
-		if got.Message != "OK" {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "OK")
+		if got.Message != "ok" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "ok")
 		}
 	})
 
@@ -89,8 +89,8 @@ func TestServer(t *testing.T) {
 			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.CreatedResponseSchema{})
 		}
 
-		if got.Message != "Created" {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "Created")
+		if got.Message != "created" {
+			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "created")
 		}
 	})
 
