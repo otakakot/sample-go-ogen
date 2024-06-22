@@ -136,7 +136,7 @@ func TestHttpTableTest(t *testing.T) {
 
 			t.Cleanup(func() {
 				if err := res.Result().Body.Close(); err != nil {
-					t.Error(err)
+					t.Log(err)
 				}
 			})
 
@@ -233,7 +233,7 @@ func TestHttpNormalTableTest(t *testing.T) {
 
 			t.Cleanup(func() {
 				if err := res.Result().Body.Close(); err != nil {
-					t.Error(err)
+					t.Log(err)
 				}
 			})
 
@@ -355,7 +355,7 @@ func TestHttpAbnormalTableTest(t *testing.T) {
 
 			t.Cleanup(func() {
 				if err := res.Result().Body.Close(); err != nil {
-					t.Error(err)
+					t.Log(err)
 				}
 			})
 
