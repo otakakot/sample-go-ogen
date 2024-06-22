@@ -122,12 +122,7 @@ func TestHttpTableTest(t *testing.T) {
 				return
 			}
 
-			req, err := http.NewRequest(http.MethodPost, "/test", body)
-			if err != nil {
-				t.Error(err)
-
-				return
-			}
+			req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 			req.Header.Set("Content-Type", "application/json")
 
@@ -224,12 +219,7 @@ func TestHttpNormalTableTest(t *testing.T) {
 				return
 			}
 
-			req, err := http.NewRequest(http.MethodPost, "/test", body)
-			if err != nil {
-				t.Error(err)
-
-				return
-			}
+			req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 			req.Header.Set("Content-Type", "application/json")
 
@@ -351,12 +341,7 @@ func TestHttpAbnormalTableTest(t *testing.T) {
 				return
 			}
 
-			req, err := http.NewRequest(http.MethodPost, "/test", body)
-			if err != nil {
-				t.Error(err)
-
-				return
-			}
+			req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 			req.Header.Set("Content-Type", "application/json")
 

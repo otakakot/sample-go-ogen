@@ -36,10 +36,7 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
+		req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 		req.Header.Set("Content-Type", "application/json")
 
@@ -83,10 +80,7 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
+		req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 		req.Header.Set("Content-Type", "application/json")
 
@@ -133,10 +127,7 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
+		req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 		req.Header.Set("Content-Type", "application/json")
 
@@ -170,10 +161,7 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
+		req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 		req.Header.Set("Content-Type", "application/json")
 
@@ -205,10 +193,7 @@ func TestHttpTest(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
+		req := httptest.NewRequest(http.MethodPost, "/test", body)
 
 		// MEMO: Content-Type が設定されていない
 
