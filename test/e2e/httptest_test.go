@@ -70,53 +70,6 @@ func TestHttpTest(t *testing.T) {
 		}
 	})
 
-	t.Run("201", func(t *testing.T) {
-		t.Parallel()
-
-		body := &bytes.Buffer{}
-
-		v := &api.TestReq{
-			Status: 201,
-		}
-
-		if err := json.NewEncoder(body).Encode(v); err != nil {
-			t.Fatal(err)
-		}
-
-		req, err := http.NewRequest(http.MethodPost, "/test", body)
-		if err != nil {
-			t.Error(err)
-		}
-
-		req.Header.Set("Content-Type", "application/json")
-
-		req.Header.Set("Authorization", "Bearer token")
-
-		res := httptest.NewRecorder()
-
-		hdl.ServeHTTP(res, req)
-
-		t.Cleanup(func() {
-			if err := res.Result().Body.Close(); err != nil {
-				t.Log(err)
-			}
-		})
-
-		if res.Code != http.StatusCreated {
-			t.Errorf("expected status code %d, got %d", http.StatusCreated, res.Code)
-		}
-
-		var got api.CreatedResponseSchema
-
-		if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
-			t.Fatal(err)
-		}
-
-		if got.Message != "created" {
-			t.Errorf("expected message %s, got %s", "created", got.Message)
-		}
-	})
-
 	t.Run("400", func(t *testing.T) {
 		t.Parallel()
 

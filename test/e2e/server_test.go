@@ -67,33 +67,6 @@ func TestServer(t *testing.T) {
 		}
 	})
 
-	t.Run("201", func(t *testing.T) {
-		t.Parallel()
-
-		cli, err := api.NewClient(srv.URL, sec)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		ctx := context.Background()
-
-		res, err := cli.Test(ctx, &api.TestReq{
-			Status: 201,
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		got, ok := res.(*api.CreatedResponseSchema)
-		if !ok {
-			t.Fatalf("unexpected response type: got=%T, want=%T", res, &api.CreatedResponseSchema{})
-		}
-
-		if got.Message != "created" {
-			t.Errorf("unexpected message: got=%q, want=%q", got.Message, "created")
-		}
-	})
-
 	t.Run("400", func(t *testing.T) {
 		t.Parallel()
 

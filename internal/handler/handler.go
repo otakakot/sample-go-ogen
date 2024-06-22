@@ -41,22 +41,16 @@ func (hdl *Handler) GetHealth(ctx context.Context, params api.GetHealthParams) (
 
 // Test implements api.Handler.
 func (hdl *Handler) Test(ctx context.Context, req *api.TestReq) (api.TestRes, error) {
-	if _, err := hdl.uc.Switch(ctx, usecase.SwitchInput{
-		Status: req.Status,
-	}); err != nil {
-		return nil, err
-	}
-
 	if req.GetStatus() == http.StatusOK {
 		return &api.OKResponseSchema{
 			Message: "ok",
 		}, nil
 	}
 
-	if req.GetStatus() == http.StatusCreated {
-		return &api.CreatedResponseSchema{
-			Message: "created",
-		}, nil
+	if _, err := hdl.uc.Switch(ctx, usecase.SwitchInput{
+		Status: req.Status,
+	}); err != nil {
+		return nil, err
 	}
 
 	return nil, &api.ErrorStatusCode{

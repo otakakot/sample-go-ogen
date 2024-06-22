@@ -167,3 +167,228 @@ func TestHttpTableTest(t *testing.T) {
 		})
 	}
 }
+
+func TestHttpNormalTableTest(t *testing.T) {
+	t.Parallel()
+
+	hdl, err := api.NewServer(
+		&handler.Handler{},
+		&security.Security{},
+	)
+	if err != nil {
+		t.Fatalf("failed to create server: %v", err)
+	}
+
+	type args struct {
+		token string
+		req   *api.TestReq
+	}
+
+	type want struct {
+		status int
+		body   api.OKResponseSchema
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want want
+	}{
+		{
+			name: "200",
+			args: args{
+				token: "token",
+				req: &api.TestReq{
+					Status: 200,
+				},
+			},
+			want: want{
+				status: http.StatusOK,
+				body: api.OKResponseSchema{
+					Message: "ok",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			body := &bytes.Buffer{}
+
+			if err := json.NewEncoder(body).Encode(tt.args.req); err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			req, err := http.NewRequest(http.MethodPost, "/test", body)
+			if err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			req.Header.Set("Content-Type", "application/json")
+
+			if tt.args.token != "" {
+				req.Header.Set("Authorization", "Bearer "+tt.args.token)
+			}
+
+			res := httptest.NewRecorder()
+
+			hdl.ServeHTTP(res, req)
+
+			t.Cleanup(func() {
+				if err := res.Result().Body.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+
+			if res.Result().StatusCode != tt.want.status {
+				t.Errorf("status code = %d, want %d", res.Result().StatusCode, tt.want.status)
+			}
+
+			var got api.OKResponseSchema
+
+			if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			if diff := cmp.Diff(got, tt.want.body); diff != "" {
+				t.Errorf("response body mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestHttpAbnormalTableTest(t *testing.T) {
+	t.Parallel()
+
+	hdl, err := api.NewServer(
+		&handler.Handler{},
+		&security.Security{},
+	)
+	if err != nil {
+		t.Fatalf("failed to create server: %v", err)
+	}
+
+	type args struct {
+		token string
+		req   *api.TestReq
+	}
+
+	type want struct {
+		status int
+		body   api.Error
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want want
+	}{
+		{
+			name: "400",
+			args: args{
+				token: "token",
+				req: &api.TestReq{
+					Status: 400,
+				},
+			},
+			want: want{
+				status: http.StatusBadRequest,
+				body: api.Error{
+					Message: "bad request",
+				},
+			},
+		},
+		{
+			name: "401",
+			args: args{
+				token: "invalid",
+				req: &api.TestReq{
+					Status: 200,
+				},
+			},
+			want: want{
+				status: http.StatusForbidden,
+				body: api.Error{
+					Message: "operation Test: security \"BearerAuth\": forbidden",
+				},
+			},
+		},
+		{
+			name: "500",
+			args: args{
+				req: &api.TestReq{
+					Status: 200,
+				},
+			},
+			want: want{
+				status: http.StatusInternalServerError,
+				body: api.Error{
+					Message: "operation Test: security \"\": security requirement is not satisfied",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			body := &bytes.Buffer{}
+
+			if err := json.NewEncoder(body).Encode(tt.args.req); err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			req, err := http.NewRequest(http.MethodPost, "/test", body)
+			if err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			req.Header.Set("Content-Type", "application/json")
+
+			if tt.args.token != "" {
+				req.Header.Set("Authorization", "Bearer "+tt.args.token)
+			}
+
+			res := httptest.NewRecorder()
+
+			hdl.ServeHTTP(res, req)
+
+			t.Cleanup(func() {
+				if err := res.Result().Body.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+
+			if res.Result().StatusCode != tt.want.status {
+				t.Errorf("status code = %d, want %d", res.Result().StatusCode, tt.want.status)
+			}
+
+			var got api.Error
+
+			if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+				t.Error(err)
+
+				return
+			}
+
+			if diff := cmp.Diff(got, tt.want.body); diff != "" {
+				t.Errorf("response body mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}

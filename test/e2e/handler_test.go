@@ -45,22 +45,6 @@ func TestHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "201",
-			args: args{
-				ctx: context.Background(),
-				req: &api.TestReq{
-					Status: 201,
-				},
-			},
-			want: &api.CreatedResponseSchema{
-				Message: "created",
-			},
-			wantErr: false,
-			checkErr: func(t *testing.T, err error) {
-				t.Helper()
-			},
-		},
-		{
 			name: "400",
 			args: args{
 				ctx: context.Background(),

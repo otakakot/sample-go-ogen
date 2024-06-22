@@ -24,24 +24,6 @@ func (s *BearerAuth) SetToken(val string) {
 	s.Token = val
 }
 
-// Ref: #/components/schemas/CreatedResponseSchema
-type CreatedResponseSchema struct {
-	// Message.
-	Message string `json:"message"`
-}
-
-// GetMessage returns the value of Message.
-func (s *CreatedResponseSchema) GetMessage() string {
-	return s.Message
-}
-
-// SetMessage sets the value of Message.
-func (s *CreatedResponseSchema) SetMessage(val string) {
-	s.Message = val
-}
-
-func (*CreatedResponseSchema) testRes() {}
-
 // Ref: #/components/schemas/Error
 type Error struct {
 	Message string `json:"message"`

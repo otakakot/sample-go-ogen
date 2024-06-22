@@ -101,12 +101,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OKResponseSchema"
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreatedResponseSchema"
         "400":
           description: Bad Request
           content:
@@ -162,15 +156,6 @@ components:
       required:
         - message
     OKResponseSchema:
-      type: object
-      properties:
-        message:
-          type: string
-          description: message
-          example: message
-      required:
-        - message
-    CreatedResponseSchema:
       type: object
       properties:
         message:
