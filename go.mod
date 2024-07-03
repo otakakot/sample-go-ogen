@@ -7,9 +7,9 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/google/go-cmp v0.6.0
 	github.com/ogen-go/ogen v1.2.1
-	go.opentelemetry.io/otel v1.27.0
-	go.opentelemetry.io/otel/metric v1.27.0
-	go.opentelemetry.io/otel/trace v1.27.0
+	go.opentelemetry.io/otel v1.28.0
+	go.opentelemetry.io/otel/metric v1.28.0
+	go.opentelemetry.io/otel/trace v1.28.0
 	go.uber.org/multierr v1.11.0
 )
 
