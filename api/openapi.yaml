@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: Sample Go ogen APP
+  description: |-
+    This is the Sample Go ogen APP API documentation.
+  termsOfService: https://localhost:8080
+  contact:
+    email: kotaro.otaka@example.com
+  license:
+    name: Apache 2.0
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Health
+    description: Health
+  - name: Test
+    description: Test
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health
+      description: Health
+      operationId: getHealth
+      parameters:
+        - name: message
+          in: query
+          description: message
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponseSchema"
+        default:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - Health
+      summary: Health
+      description: Health
+      operationId: postHealth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HealthRequestSchema"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponseSchema"
+        default:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /test:
+    post:
+      tags:
+        - Test
+      summary: Test
+      description: Test
+      operationId: test
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+                  description: status
+                  example: 200
+              required:
+                - status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OKResponseSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        default:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    HealthRequestSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    HealthResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    OKResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: message
+          example: message
+      required:
+        - message
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
